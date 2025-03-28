@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { CheckCircle2, Circle, CalendarDays, BookOpen, GamepadIcon } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { CheckCircle2, Circle, CalendarDays, BookOpen, GamepadIcon, Sun, Moon } from "lucide-react";
 
 export default function Dashboard() {
   const [tasks, setTasks] = useState([
@@ -141,6 +141,19 @@ export default function Dashboard() {
   ]);
 
   const [filter, setFilter] = useState("Semua");
+  const [isDark, setIsDark] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const savedTheme = localStorage.getItem('theme');
+      return savedTheme ? savedTheme === 'dark' 
+        : window.matchMedia('(prefers-color-scheme: dark)').matches;
+    }
+    return false;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    document.documentElement.classList.toggle('dark', isDark);
+  }, [isDark]);
 
   const toggleTask = (taskId) => {
     setTasks(prevTasks => 
@@ -159,52 +172,84 @@ export default function Dashboard() {
   const uniquePhases = ["Semua", ...new Set(tasks.map(task => task.phase))];
 
   return (
-    <div className="bg-gray-50 min-h-screen p-8">
+    <div className={`min-h-screen p-8 transition-colors ${
+      isDark ? 'bg-gray-900' : 'bg-gray-50'
+    }`}>
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-extrabold text-gray-800 flex items-center">
+          <h1 className={`text-3xl font-extrabold flex items-center ${
+            isDark ? 'text-white' : 'text-gray-800'
+          }`}>
             <CalendarDays className="mr-3 text-indigo-600" />
             Game Development Progress
           </h1>
-          <div className="flex space-x-2">
-            {uniquePhases.map((phaseOption) => (
-              <button
-                key={phaseOption}
-                onClick={() => setFilter(phaseOption)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                  filter === phaseOption 
-                    ? 'bg-indigo-600 text-white' 
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                }`}
-              >
-                {phaseOption}
-              </button>
-            ))}
+          
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => setIsDark(!isDark)}
+              className={`p-2 rounded-full transition-colors ${
+                isDark ? 'bg-gray-800 text-yellow-400' : 'bg-gray-200 text-gray-600'
+              }`}
+            >
+              {isDark ? <Sun size={20} /> : <Moon size={20} />}
+            </button>
+            
+            <div className="flex space-x-2">
+              {uniquePhases.map((phaseOption) => (
+                <button
+                  key={phaseOption}
+                  onClick={() => setFilter(phaseOption)}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                    filter === phaseOption 
+                      ? 'bg-indigo-600 text-white' 
+                      : isDark 
+                        ? 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  }`}
+                >
+                  {phaseOption}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
-        <div className="bg-white shadow-lg rounded-lg overflow-hidden">
-          <div className="divide-y divide-gray-200">
+        <div className={`shadow-lg rounded-lg overflow-hidden ${
+          isDark ? 'bg-gray-800' : 'bg-white'
+        }`}>
+          <div className={`divide-y ${
+            isDark ? 'divide-gray-700' : 'divide-gray-200'
+          }`}>
             {filteredTasks.map((task) => (
               <div 
                 key={task.id} 
-                className={`flex items-center justify-between p-4 hover:bg-gray-50 transition-colors ${
+                className={`flex items-center justify-between p-4 transition-colors ${
                   task.completed ? 'opacity-60' : ''
+                } ${
+                  isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-50'
                 }`}
               >
                 <div className="flex items-center space-x-4">
                   {task.icon}
                   <div>
                     <div className="flex items-center space-x-2">
-                      <span className="text-sm text-gray-500">{task.date}</span>
+                      <span className={`text-sm ${
+                        isDark ? 'text-gray-400' : 'text-gray-500'
+                      }`}>{task.date}</span>
                       {task.completed && (
                         <CheckCircle2 className="w-4 h-4 text-green-500" />
                       )}
                     </div>
-                    <p className={`font-semibold ${task.completed ? 'line-through text-gray-500' : 'text-gray-800'}`}>
+                    <p className={`font-semibold ${
+                      task.completed 
+                        ? 'line-through text-gray-500' 
+                        : isDark ? 'text-white' : 'text-gray-800'
+                    }`}>
                       {task.task}
                     </p>
-                    <span className="text-xs text-gray-400">{task.phase}</span>
+                    <span className={`text-xs ${
+                      isDark ? 'text-gray-500' : 'text-gray-400'
+                    }`}>{task.phase}</span>
                   </div>
                 </div>
                 <button 
@@ -213,7 +258,9 @@ export default function Dashboard() {
                     flex items-center justify-center w-24 py-2 rounded-full text-sm font-medium transition-all
                     ${task.completed 
                       ? 'bg-green-100 text-green-700 hover:bg-green-200' 
-                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                      : isDark
+                        ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                     }
                   `}
                 >
@@ -234,7 +281,9 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="mt-6 text-center text-gray-500 text-sm">
+        <div className={`mt-6 text-center text-sm ${
+          isDark ? 'text-gray-400' : 'text-gray-500'
+        }`}>
           Total Tugas: {tasks.length} | 
           Tugas Selesai: {tasks.filter(task => task.completed).length}
         </div>
