@@ -5,6 +5,7 @@ export default function Dashboard() {
   const [tasks, setTasks] = useState([
     // Fase 1: Persiapan Proposal
     { 
+      id: 1,
       date: "28 Mar 2025", 
       task: "Review pedoman proposal", 
       completed: false, 
@@ -12,6 +13,7 @@ export default function Dashboard() {
       icon: <BookOpen className="w-5 h-5 text-blue-600" />
     },
     { 
+      id: 2,
       date: "29 Mar 2025", 
       task: "Brainstorm konsep game", 
       completed: false, 
@@ -19,6 +21,7 @@ export default function Dashboard() {
       icon: <GamepadIcon className="w-5 h-5 text-purple-600" />
     },
     { 
+      id: 3,
       date: "30 Mar 2025", 
       task: "Kumpulkan referensi jurnal", 
       completed: false, 
@@ -26,6 +29,7 @@ export default function Dashboard() {
       icon: <BookOpen className="w-5 h-5 text-blue-600" />
     },
     { 
+      id: 4,
       date: "31 Mar 2025", 
       task: "Tulis Bab 1: Pendahuluan", 
       completed: false, 
@@ -35,6 +39,7 @@ export default function Dashboard() {
     
     // Fase 2: Pengembangan Awal Game
     { 
+      id: 5,
       date: "1 Apr 2025", 
       task: "Desain UI game (sketsa awal)", 
       completed: false, 
@@ -42,6 +47,7 @@ export default function Dashboard() {
       icon: <GamepadIcon className="w-5 h-5 text-purple-600" />
     },
     { 
+      id: 6,
       date: "2 Apr 2025", 
       task: "Setup proyek game di Unity", 
       completed: false, 
@@ -49,6 +55,7 @@ export default function Dashboard() {
       icon: <GamepadIcon className="w-5 h-5 text-purple-600" />
     },
     { 
+      id: 7,
       date: "3 Apr 2025", 
       task: "Implementasi basic movement", 
       completed: false, 
@@ -56,6 +63,7 @@ export default function Dashboard() {
       icon: <GamepadIcon className="w-5 h-5 text-purple-600" />
     },
     { 
+      id: 8,
       date: "4 Apr 2025", 
       task: "Tulis Bab 2: Kajian Pustaka", 
       completed: false, 
@@ -65,6 +73,7 @@ export default function Dashboard() {
     
     // Fase 3: Implementasi dan Pengujian Awal
     { 
+      id: 9,
       date: "10 Apr 2025", 
       task: "Buat sistem quest dalam game", 
       completed: false, 
@@ -72,6 +81,7 @@ export default function Dashboard() {
       icon: <GamepadIcon className="w-5 h-5 text-purple-600" />
     },
     { 
+      id: 10,
       date: "15 Apr 2025", 
       task: "Integrasi UI dengan gameplay", 
       completed: false, 
@@ -79,6 +89,7 @@ export default function Dashboard() {
       icon: <GamepadIcon className="w-5 h-5 text-purple-600" />
     },
     { 
+      id: 11,
       date: "20 Apr 2025", 
       task: "Tulis Bab 3: Metode Penelitian", 
       completed: false, 
@@ -86,6 +97,7 @@ export default function Dashboard() {
       icon: <BookOpen className="w-5 h-5 text-blue-600" />
     },
     { 
+      id: 12,
       date: "25 Apr 2025", 
       task: "Playtesting awal", 
       completed: false, 
@@ -95,6 +107,7 @@ export default function Dashboard() {
     
     // Fase 4: Penyempurnaan dan Seminar Proposal
     { 
+      id: 13,
       date: "1 Mei 2025", 
       task: "Perbaikan skripsi Bab 1-3", 
       completed: false, 
@@ -102,6 +115,7 @@ export default function Dashboard() {
       icon: <BookOpen className="w-5 h-5 text-blue-600" />
     },
     { 
+      id: 14,
       date: "5 Mei 2025", 
       task: "Finalisasi prototype game", 
       completed: false, 
@@ -109,6 +123,7 @@ export default function Dashboard() {
       icon: <GamepadIcon className="w-5 h-5 text-purple-600" />
     },
     { 
+      id: 15,
       date: "10 Mei 2025", 
       task: "Simulasi seminar proposal", 
       completed: false, 
@@ -116,6 +131,7 @@ export default function Dashboard() {
       icon: <BookOpen className="w-5 h-5 text-blue-600" />
     },
     { 
+      id: 16,
       date: "15 Mei 2025", 
       task: "Presentasi seminar proposal", 
       completed: false, 
@@ -126,10 +142,14 @@ export default function Dashboard() {
 
   const [filter, setFilter] = useState("Semua");
 
-  const toggleTask = (index) => {
-    const newTasks = [...tasks];
-    newTasks[index].completed = !newTasks[index].completed;
-    setTasks(newTasks);
+  const toggleTask = (taskId) => {
+    setTasks(prevTasks => 
+      prevTasks.map(task => 
+        task.id === taskId 
+          ? { ...task, completed: !task.completed }
+          : task
+      )
+    );
   };
 
   const filteredTasks = filter === "Semua" 
@@ -165,9 +185,9 @@ export default function Dashboard() {
 
         <div className="bg-white shadow-lg rounded-lg overflow-hidden">
           <div className="divide-y divide-gray-200">
-            {filteredTasks.map((task, index) => (
+            {filteredTasks.map((task) => (
               <div 
-                key={index} 
+                key={task.id} 
                 className={`flex items-center justify-between p-4 hover:bg-gray-50 transition-colors ${
                   task.completed ? 'opacity-60' : ''
                 }`}
@@ -188,7 +208,7 @@ export default function Dashboard() {
                   </div>
                 </div>
                 <button 
-                  onClick={() => toggleTask(index)} 
+                  onClick={() => toggleTask(task.id)} 
                   className={`
                     flex items-center justify-center w-24 py-2 rounded-full text-sm font-medium transition-all
                     ${task.completed 
